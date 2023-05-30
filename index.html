@@ -1,9 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <link rel=stylesheet type="text/css" href="style.css">
     <body>
-        <title>Website</title>
-        <header>Hello</header>
+      <title>Website</title>
+      <nav class="nav-bar">
+        <ul class = "nav-links">
+          <li><a href="/">One</a></li>
+          <li><a href="/">Two</a></li>
+          <li><a href="/">Three</a></li>
+        </ul>
+      </nav>
+      <div id="container">
+    	 <video autoplay="true" id="videoElement">
+    	
+    	 </video>
+      </div>
+      <script>
+        var video = document.querySelector("#videoElement");
+
+        if (navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+              video.srcObject = stream;
+            })
+            .catch(function (err0r) {
+              console.log("Something went wrong!");
+            });
+        }
+      </script>
     </body>
 </head>
 </html>

@@ -1,0 +1,17 @@
+ul{
+  list-style-type: none;
+}
+
+.nav-bar {
+  background-color: #009980;
+  color: white;
+  overflow: hidden;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.nav-bar li{
+  display: inline-block;
+  margin-right: 20px;
+}
