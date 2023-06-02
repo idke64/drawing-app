@@ -1,17 +1,65 @@
-ul{
-  list-style-type: none;
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+*{
+  font-family: "Rubik", sans-serif;
+  box-sizing: border-box;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  background-color: #E5E4E2;
 }
 
 .nav-bar {
-  background-color: #009980;
+  background-color: #038a73a8;
+  font-size: large;
+  display:flex;
   color: white;
   overflow: hidden;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
+  justify-content:space-between;
+  padding: 15px;
 }
 
-.nav-bar li{
+.nav-links li{
+  list-style: none;
   display: inline-block;
   margin-right: 20px;
+  margin-left: 20px;
+  list-style: none;
+}
+
+.nav-links a{
+  color:white;
+  transition: all 0.3s ease 0s;
+}
+
+.nav-links li a:hover {
+  color: rgb(0, 223, 204);
+  text-shadow: 0cqb;
+}
+
+.logo {
+  margin-left: 20px;
+  width: 70px;
+  height: 70px;
+}
+
+#board{
+  position: absolute;
+  top: 160px;
+  right:50px;
+  flex:1;
+  overflow: none;
+  border:none;
+  
+}
+
+#videoElement
+{
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); 
+    -moz-transform:rotateY(180deg); 
 }

@@ -1,35 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <link rel=stylesheet type="text/css" href="style.css">
-    <body>
-      <title>Website</title>
-      <nav class="nav-bar">
-        <ul class = "nav-links">
-          <li><a href="/">One</a></li>
-          <li><a href="/">Two</a></li>
-          <li><a href="/">Three</a></li>
-        </ul>
-      </nav>
-      <div id="container">
-    	 <video autoplay="true" id="videoElement">
-    	
-    	 </video>
-      </div>
-      <script>
-        var video = document.querySelector("#videoElement");
-
-        if (navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function (stream) {
-              video.srcObject = stream;
-            })
-            .catch(function (err0r) {
-              console.log("Something went wrong!");
-            });
-        }
-      </script>
-    </body>
-</head>
+    <script src="script.js" defer></script>
+    <title>Website</title>
+  </head>
+  <body>
+      
+    <nav class="nav-bar">
+      <img class="logo" src="Assets/templogo.png" alt="logo">
+      <ul class = "nav-links">
+        <li><a href="">One</a></li>
+        <li><a href="">Two</a></li>
+        <li><a href="">Three</a></li>
+        <li><a href="">Three</a></li>
+      </ul>
+        
+    </nav>
+    
+    <!-- Canvas for drawing  -->
+    <canvas id="board">You need canvas</canvas>
+    
+  </body>
 </html>
