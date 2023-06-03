@@ -8,7 +8,7 @@ var context = canvas.getContext("2d");
 function updateCanvas(){
     canvas.width = parseInt(style.width);
     canvas.height = parseInt(style.height);
-    
+
     context.fillStyle="#fff";
     context.fillRect(0,0,canvas.width,canvas.height);
 }
@@ -16,49 +16,103 @@ function updateCanvas(){
 updateCanvas()
 window.addEventListener("resize",updateCanvas());
 
-function draw(e){
-    if (drawing){
+function draw(e) {
+    if (drawing) {
         context.lineTo(e.offsetX, e.offsetY);
         context.stroke();
     }
 }
 
-function startDrawing(e){
-    console.log(e.offsetX + " eses")
-    console.log(e.offsetX + " sss")
+function startDrawing() {
     drawing = true;
     context.beginPath();
-    context.lineWidth=3;
+    context.lineWidth = 3;
     context.strokeStyle = "black";
 }
 
-function stopDrawing(){
+function stopDrawing() {
     drawing = false;
 }
 
-canvas.addEventListener("mousedown",startDrawing);
-canvas.addEventListener("mousemove",draw);
-canvas.addEventListener("mouseup",stopDrawing);
+canvas.addEventListener("mousedown", startDrawing);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseup", stopDrawing);
 
 function displayElement(){
 
 }
 
 // video things
-var video = document.createElement("video");
+const video = document.createElement("video");
 video.autoplay = true;
 video.id = 'videoElement';
 var overlay = document.getElementById("cameraContainer");
 var cameraNotFound = document.getElementById("cameraNotFound");
 
 if (navigator.mediaDevices.getUserMedia) {
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(function (stream) {
-        video.srcObject = stream;
-        overlay.appendChild(video);
-        cameraNotFound.style.display = "none";
-    })
-    .catch(function (err0r) {
-        console.log("Something went wrong!");
-    });
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            video.srcObject = stream;
+            overlay.appendChild(video);
+            cameraNotFound.style.display = "none";
+        })
+        .catch(function (err0r) {
+            console.log("Something went wrong!");
+        });
 }
+
+//mediapipe stuff
+import {
+    GestureRecognizer,
+    FilesetResolver,
+    DrawingUtils
+} from "/node_modules/@mediapipe/tasks-vision/vision_bundle.js";
+
+let gestureRecognizer = null;
+let runningMode = "IMAGE";
+
+const createGestureRecognizer = async () => {
+    const vision = await FilesetResolver.forVisionTasks(
+        "./node_modules/@mediapipe/tasks-vision/wasm"
+    );
+    gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+        baseOptions: {
+            modelAssetPath:
+                "/static/gesture_recognizer.task",
+            delegate: "GPU"
+        },
+        runningMode: runningMode
+    });
+};
+createGestureRecognizer();
+
+let lastVideoTime = -1;
+let results = undefined;
+let resultsText = document.getElementById("resultsText");
+
+async function predictVideo() {
+
+    if (!gestureRecognizer) {
+        console.log('waiting for gesture recognizer to load...');
+        return;
+    }
+
+    if (runningMode === "IMAGE") {
+        runningMode = "VIDEO";
+        await gestureRecognizer.setOptions({ runningMode: "VIDEO" });
+    }
+
+    let nowInMs = Date.now();
+    if (video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
+        results = gestureRecognizer.recognizeForVideo(video, nowInMs);
+    }
+
+    const categoryName = results.gestures[0][0].categoryName;
+    const categoryScore = parseFloat(results.gestures[0][0].score * 100).toFixed(2);
+
+    resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence`;
+
+}
+
+setInterval(predictVideo, 50);
