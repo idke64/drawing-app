@@ -9,7 +9,7 @@
   <body>
       
     <nav class="nav-bar">
-      <img class="logo" src="Assets/templogo.png" alt="logo">
+      <img id="logo" src="Assets/templogo.png" alt="logo">
       <ul class = "nav-links">
         <li><a href="">One</a></li>
         <li><a href="">Two</a></li>
@@ -22,11 +22,16 @@
     <!-- Canvas for drawing  -->
     <div id="main">
 
-      <div id="disp">
-        <video autoplay="true" id="videoElement"></video>
+      <div class="disp">
+        <div id="cameraContainer">
+          <div class="icon">
+            <img id="cameraNotFound" src="Assets/cameranotfound.png" alt="cameraNotFound">
+          </div>
+        </div>
+        <!-- <video autoplay="true" id="videoElement"></video> -->
       </div>
 
-      <div id="disp">
+      <div class="disp">
         <canvas id="canvas">You need canvas</canvas>
       </div>
 
