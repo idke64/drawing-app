@@ -66,14 +66,14 @@ import {
     GestureRecognizer,
     FilesetResolver,
     DrawingUtils
-} from "/node_modules/@mediapipe/tasks-vision/vision_bundle.js";
+} from "/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
 
 let gestureRecognizer = null;
 let runningMode = "IMAGE";
 
 const createGestureRecognizer = async () => {
     const vision = await FilesetResolver.forVisionTasks(
-        "./node_modules/@mediapipe/tasks-vision/wasm"
+        "./nodemodules/mediapipe/tasks-vision/wasm"
     );
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
         baseOptions: {
@@ -108,10 +108,15 @@ async function predictVideo() {
         results = gestureRecognizer.recognizeForVideo(video, nowInMs);
     }
 
-    const categoryName = results.gestures[0][0].categoryName;
-    const categoryScore = parseFloat(results.gestures[0][0].score * 100).toFixed(2);
-
-    resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence`;
+    if (results.gestures.length > 0) {
+        const categoryName = results.gestures[0][0].categoryName;
+        const categoryScore = parseFloat(results.gestures[0][0].score * 100).toFixed(2);
+        resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence`;
+    }
+    else {
+        resultsText.innerHTML = `i don't see a hand gesture`;
+    }
+    
 
 }
 
