@@ -53,7 +53,7 @@ if (navigator.mediaDevices.getUserMedia) {
             cameraNotFound.style.display = "none";
         })
         .catch(function (err0r) {
-            console.log("Something went wrong!");
+            console.log(err0r);
         });
 }
 
@@ -61,7 +61,7 @@ if (navigator.mediaDevices.getUserMedia) {
 import {
     GestureRecognizer,
     FilesetResolver,
-} from "/DrawingApp/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
+} from "/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
 
 let gestureRecognizer = null;
 let runningMode = "IMAGE";
