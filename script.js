@@ -66,14 +66,14 @@ import {
     GestureRecognizer,
     FilesetResolver,
     DrawingUtils
-} from "/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
+} from "/DrawingApp/nodemodules/mediapipe/tasks-vision";
 
 let gestureRecognizer = null;
 let runningMode = "IMAGE";
 
 const createGestureRecognizer = async () => {
     const vision = await FilesetResolver.forVisionTasks(
-        "./nodemodules/mediapipe/tasks-vision/wasm"
+        "/DrawingApp/nodemodules/mediapipe/tasks-vision/wasm"
     );
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
         baseOptions: {
