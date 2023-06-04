@@ -78,7 +78,7 @@ const createGestureRecognizer = async () => {
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
         baseOptions: {
             modelAssetPath:
-                "/static/gesture_recognizer.task",
+                "/DrawingApp/static/gesture_recognizer.task",
             delegate: "GPU"
         },
         runningMode: runningMode
