@@ -16,9 +16,9 @@ function updateCanvas(){
 updateCanvas()
 window.addEventListener("resize",updateCanvas());
 
-function draw(e) {
+function draw(posX, posY) {
     if (drawing) {
-        context.lineTo(e.offsetX, e.offsetY);
+        context.lineTo(posX, posY);
         context.stroke();
     }
 }
@@ -34,13 +34,9 @@ function stopDrawing() {
     drawing = false;
 }
 
-canvas.addEventListener("mousedown", startDrawing);
-canvas.addEventListener("mousemove", draw);
-canvas.addEventListener("mouseup", stopDrawing);
-
-function displayElement(){
-
-}
+//canvas.addEventListener("mousedown", startDrawing);
+//canvas.addEventListener("mousemove", draw);
+//canvas.addEventListener("mouseup", stopDrawing);
 
 // video things
 const video = document.createElement("video");
@@ -65,7 +61,6 @@ if (navigator.mediaDevices.getUserMedia) {
 import {
     GestureRecognizer,
     FilesetResolver,
-    DrawingUtils
 } from "/DrawingApp/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
 
 let gestureRecognizer = null;
@@ -89,6 +84,8 @@ createGestureRecognizer();
 let lastVideoTime = -1;
 let results = undefined;
 let resultsText = document.getElementById("resultsText");
+let lastPosX = -1, lastPosY = -1;
+let lastGesture = "None";
 
 async function predictVideo() {
 
@@ -109,9 +106,35 @@ async function predictVideo() {
     }
 
     if (results.gestures.length > 0) {
+
         const categoryName = results.gestures[0][0].categoryName;
         const categoryScore = parseFloat(results.gestures[0][0].score * 100).toFixed(2);
-        resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence`;
+
+        let posX = 0, posY = 0;
+        for (let i = 0; i < 20; i++) {
+            posX += results.landmarks[0][i].x;
+            posY += results.landmarks[0][i].y;
+        }
+        posX /= 20;
+        posY /= 20;
+
+        if (lastGesture !== "Open_Palm" && categoryName === "Open_Palm") {
+            startDrawing();
+        }
+        else if (categoryName === "Open_Palm" && Math.abs(lastPosX - posX) > 0.002 && Math.abs(lastPosY - posY) > 0.002) {
+            let x = canvas.width * (1 - posX);
+            let y = canvas.height * posY;
+            draw(x, y);
+        }
+        else if (categoryName !== "Open_Palm") {
+            stopDrawing();
+        }
+
+        lastGesture = categoryName;
+        lastPosX = posX;
+        lastPosY = posY;
+        resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence at ${posX.toFixed(2)}, ${posY.toFixed(2)}`;
+        
     }
     else {
         resultsText.innerHTML = `i don't see a hand gesture`;
