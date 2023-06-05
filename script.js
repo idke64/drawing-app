@@ -59,88 +59,65 @@ if (navigator.mediaDevices.getUserMedia) {
 
 //mediapipe stuff
 import {
-    GestureRecognizer,
     FilesetResolver,
-} from "/DrawingApp/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
+    HandLandmarker
+} from "/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
 
 let gestureRecognizer = null;
-let runningMode = "IMAGE";
+let runningMode = "VIDEO";
+let handLandmarker = undefined;
 
-const createGestureRecognizer = async () => {
+const createHandLandmarker = async () => {
     const vision = await FilesetResolver.forVisionTasks(
-        "/DrawingApp/nodemodules/mediapipe/tasks-vision/wasm"
+        "/nodemodules/mediapipe/tasks-vision/wasm"
     );
-    gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+    handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
             modelAssetPath:
-                "/DrawingApp/static/gesture_recognizer.task",
+                "/static/hand_landmarker.task",
             delegate: "GPU"
         },
-        runningMode: runningMode
+        runningMode: runningMode,
+        numHands: 2
     });
-};
-createGestureRecognizer();
+}
+createHandLandmarker();
 
-let lastVideoTime = -1;
-let results = undefined;
-let resultsText = document.getElementById("resultsText");
-let lastPosX = -1, lastPosY = -1;
-let lastGesture = "None";
+var lastVideoTime = -1;
+var results = undefined;
 
-async function predictVideo() {
+async function predict() {
 
-    if (!gestureRecognizer) {
-        console.log('waiting for gesture recognizer to load...');
-        return;
-    }
-
-    if (runningMode === "IMAGE") {
-        runningMode = "VIDEO";
-        await gestureRecognizer.setOptions({ runningMode: "VIDEO" });
-    }
-
-    let nowInMs = Date.now();
-    if (video.currentTime !== lastVideoTime) {
-        lastVideoTime = video.currentTime;
-        results = gestureRecognizer.recognizeForVideo(video, nowInMs);
-    }
-
-    if (results.gestures.length > 0) {
-
-        const categoryName = results.gestures[0][0].categoryName;
-        const categoryScore = parseFloat(results.gestures[0][0].score * 100).toFixed(2);
-
-        let posX = 0, posY = 0;
-        for (let i = 0; i < 20; i++) {
-            posX += results.landmarks[0][i].x;
-            posY += results.landmarks[0][i].y;
-        }
-        posX /= 20;
-        posY /= 20;
-
-        if (lastGesture !== "Open_Palm" && categoryName === "Open_Palm") {
-            startDrawing();
-        }
-        else if (categoryName === "Open_Palm" && Math.abs(lastPosX - posX) > 0.002 && Math.abs(lastPosY - posY) > 0.002) {
-            let x = canvas.width * (1 - posX);
-            let y = canvas.height * posY;
-            draw(x, y);
-        }
-        else if (categoryName !== "Open_Palm") {
-            stopDrawing();
-        }
-
-        lastGesture = categoryName;
-        lastPosX = posX;
-        lastPosY = posY;
-        resultsText.innerHTML = `i see ${categoryName} with ${categoryScore}% confidence at ${posX.toFixed(2)}, ${posY.toFixed(2)}`;
+    if (!handLandmarker){
+        console.log('not loaded');
         
     }
-    else {
-        resultsText.innerHTML = `i don't see a hand gesture`;
+
+    let startTime = performance.now();
+    if (lastVideoTime !== video.currentTime) {
+        lastVideoTime = video.currentTime;
+        results = await handLandmarker.detectForVideo(video, startTime);
+    }
+
+    if (results.landmarks) {
+        if (!drawing){
+            startDrawing();
+        }
+        for (const landmarks of results.landmarks) {
+            
+            let x = (1-landmarks[8].x) * canvas.width;
+            let y = (1-landmarks[8].y) * canvas.height;
+            console.log(x + " " + y);
+            draw(x,y);
+        }
+    }
+    else{
+        if (drawing){
+            stopDrawing();
+        }
+        return;
     }
     
-
 }
 
-setInterval(predictVideo, 50);
+setInterval(predict, 50);
