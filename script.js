@@ -61,7 +61,7 @@ if (navigator.mediaDevices.getUserMedia) {
 import {
     GestureRecognizer,
     FilesetResolver,
-} from "/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
+} from "/DrawingApp/nodemodules/mediapipe/tasks-vision/vision_bundle.js";
 
 let gestureRecognizer = null;
 let runningMode = "IMAGE";
