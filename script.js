@@ -100,23 +100,24 @@ async function predict() {
     }
 
     if (results.landmarks) {
-        if (!drawing){
-            startDrawing();
+        
+        if (results.landmarks > 0){
+            if (!drawing){
+                startDrawing();
+            }
+            for (const landmarks of results.landmarks) {
+                console.log("yes");
+                let x = (1-landmarks[8].x) * canvas.width;
+                let y = (landmarks[8].y) * canvas.height;
+                console.log(x + " " + y);
+                draw(x,y);
+            }
         }
-        for (const landmarks of results.landmarks) {
-            
-            let x = (1-landmarks[8].x) * canvas.width;
-            let y = (1-landmarks[8].y) * canvas.height;
-            console.log(x + " " + y);
-            draw(x,y);
-        }
-    }
-    else{
-        if (drawing){
+        else if (drawing && results.landmarks == 0){
             stopDrawing();
         }
-        return;
     }
+    
     
 }
 
